@@ -5,6 +5,7 @@
 #define BMP280_ADDRESS 0x76
 #define STANDARD_PRESSURE 1021
 Adafruit_BMP280 bmp;
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 volatile float temperature = -1000;
 volatile float pressure = -1000;
@@ -12,6 +13,11 @@ volatile float pressure = -1000;
 void setup() {
   Serial.begin(9600);
   while ( !Serial ) delay(100);   // wait for native usb
+  // initialize display
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
+
   Serial.println(F("BMP280 test"));
   unsigned status;
   status = bmp.begin(BMP280_ADDRESS);
@@ -36,25 +42,26 @@ void setup() {
 
 void loop() {
   readSensor();
+  writeLcd();
 
-  Serial.print(F("Temperature = "));
-  Serial.print(bmp.readTemperature());
-  Serial.println(" *C");
-  Serial.print(F("Pressure = "));
-  Serial.print(bmp.readPressure());
-  Serial.println(" Pa");
-  Serial.print(F("Approx altitude = "));
-  Serial.print(bmp.readAltitude(STANDARD_PRESSURE)); /* Adjusted to local forecast! */
-  Serial.println(" m");
-  Serial.println();
   delay(2000);
 }
 
 void readSensor() {
   temperature = bmp.readTemperature();
-  pressure = bmp.readPressure();
+  pressure = bmp.readPressure() / 100.0;
 }
 
 void writeLcd() {
-
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(F("Temp: "));
+  lcd.print(temperature);
+  lcd.print(F(" "));
+  lcd.print((char)223);
+  lcd.print("C");
+  lcd.setCursor(0,1);
+  lcd.print(F("Pre: "));
+  lcd.print(pressure, 2);
+  lcd.print(" hPa");
 }
