@@ -3,6 +3,7 @@
 #include <sensorManager.h>
 #include <lcdManager.h>
 #include <setupWifi.h>
+#include <mqttManager.h>
 
 #define SDA_PIN 8
 #define SCL_PIN 9
@@ -17,11 +18,17 @@ void setup() {
   setupLcd();
 
   setupWifi();
+  setupMqttClient();
 }
 
 void loop() {
+  tryReconnect();
+  loopMqttClient();
+
   updateReadValues();
   writeLcd();
+
+  tryPublishUpdates();
 
   delay(2000);
 }
