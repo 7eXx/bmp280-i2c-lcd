@@ -2,6 +2,9 @@
 #include <Adafruit_BMP280.h>
 #include <LiquidCrystal_I2C.h>
 
+#define SDA_PIN 8
+#define SCL_PIN 9
+
 #define BMP280_ADDRESS 0x76
 #define STANDARD_PRESSURE 1021
 Adafruit_BMP280 bmp;
@@ -13,6 +16,8 @@ volatile float pressure = -1000;
 void setup() {
   Serial.begin(9600);
   while ( !Serial ) delay(100);   // wait for native usb
+  // initialize i2c;
+  Wire.begin(SDA_PIN, SCL_PIN);
   // initialize display
   lcd.init();
   lcd.backlight();
